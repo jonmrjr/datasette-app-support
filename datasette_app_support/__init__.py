@@ -346,17 +346,25 @@ def suffix(d):
 
 
 def prettydate(date):
+    """Format a date in a pretty way (e.g. 1st January 2012)"""
+    if not date:
+        return ""
+        
     if isinstance(date, str):
         try:
             date = parser.parse(date)
-        except parser.ParserError:
+        except (parser.ParserError, TypeError):
             return date
-    return "{day}{suffix} {month} {year}".format(
-        day=date.day,
-        month=date.strftime("%B"),
-        suffix=suffix(date.day),
-        year=date.year,
-    )
+            
+    try:
+        return "{day}{suffix} {month} {year}".format(
+            day=date.day,
+            month=date.strftime("%B"),
+            suffix=suffix(date.day),
+            year=date.year,
+        )
+    except (AttributeError, ValueError):
+        return str(date) if date else ""
 
 
 @hookimpl
